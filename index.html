@@ -27,7 +27,7 @@ a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline;opa
   display:flex;align-items:center;justify-content:space-between;
   padding:0 28px;height:52px;position:sticky;top:0;z-index:200;gap:12px}
 .logo{font-size:17px;font-weight:700;color:var(--white);letter-spacing:.3px;white-space:nowrap}
-.logo span{color:var(--accent)}
+.logo span{color:var(--white)}
 .topbar-mid{display:flex;gap:8px;flex-wrap:wrap}
 .scope-tag{font-size:11px;background:#1a2d52;color:#93c5fd;border:1px solid #2d4a8a;
   border-radius:20px;padding:3px 10px;white-space:nowrap}
@@ -241,6 +241,7 @@ footer p{font-size:11px;color:var(--muted)}
   <button class="nav-btn active" onclick="showView('summary',this)">📊 Summary</button>
   <button class="nav-btn" onclick="showView('scorecard',this)">🏆 Vendor Scorecard</button>
   <button class="nav-btn" onclick="showView('consolidation',this)">🔗 Consolidation Opportunities</button>
+  <button class="nav-btn" onclick="showView('fragmented',this)">📦 Fragmented Ordering</button>
   <button class="nav-btn" onclick="showView('product',this)">📋 Product-Level Spend</button>
 </div>
 
@@ -327,7 +328,13 @@ footer p{font-size:11px;color:var(--muted)}
   </p>
   <div id="mv-panels"></div>
 
-  <div class="section-title">B · Fragmented Ordering <span class="pill">Batching opportunity</span></div>
+
+</div>
+
+<!-- ══════════════ VIEW: FRAGMENTED ORDERING ══════════════ -->
+<div class="view" id="view-fragmented">
+
+  <div class="section-title">Fragmented Ordering <span class="pill">Batching opportunity</span></div>
   <p style="font-size:12px;color:var(--muted);margin:-4px 0 16px;line-height:1.7">
     Vendors with <strong style="color:var(--text2)">≥4 invoices and avg order below €500</strong>. Monthly purchase orders could open volume pricing conversations.
   </p>
@@ -344,12 +351,6 @@ footer p{font-size:11px;color:var(--muted)}
       <tbody id="frag-tbody"></tbody>
     </table>
   </div>
-
-  <div class="section-title">C · Single-Source Concentration <span class="pill">Supply-chain risk</span></div>
-  <p style="font-size:12px;color:var(--muted);margin:-4px 0 16px;line-height:1.7">
-    Sub-categories where one vendor supplies <strong style="color:var(--text2)">≥75% of spend</strong> (min €1 000). High concentration = supply-chain risk and negotiation leverage.
-  </p>
-  <div id="conc-panels"></div>
 
 </div>
 
@@ -603,25 +604,6 @@ function buildConsolidation(){
       <td class="num sav15">${fmt(v.save15)}</td>
       <td>${spark(v.monthly)}</td>
     </tr>`).join('');
-
-  // Panel C
-  const el=document.getElementById('conc-panels');
-  if(!DATA.concentration.length){
-    el.innerHTML='<div class="panel" style="color:var(--muted)">No sub-categories with ≥75% single-vendor concentration above €1 000 detected.</div>';
-  } else {
-    el.innerHTML=DATA.concentration.map(c=>`
-      <div class="panel">
-        <div class="panel-header">
-          <div class="panel-name">⚠️ ${c.subcat}</div>
-          <div class="panel-meta">${c.top_vendor} — ${c.share_pct}% share · ${fmt(c.top_spend)} of ${fmt(c.total_spend)} total · ${c.vendor_count} vendor${c.vendor_count!==1?'s':''}</div>
-        </div>
-        <div class="vbar-row">
-          <div class="vbar-label" title="${c.top_vendor}">${c.top_vendor.length>28?c.top_vendor.slice(0,28)+'…':c.top_vendor}</div>
-          <div class="vbar-track"><div class="vbar-fill" style="width:${c.share_pct}%;background:var(--red)"></div></div>
-          <div class="vbar-amt">${fmt(c.top_spend)}</div>
-        </div>
-      </div>`).join('');
-  }
 }
 
 // ── VIEW 3: PRODUCT TABLE ─────────────────────────────────────
